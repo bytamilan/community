@@ -91,6 +91,18 @@ notifications:
   noNotifications: "No notifications"
   recentNotifications: "Recent Notifications"
 
+notification:
+  post:
+    upvote: "Someone upvoted your post"
+    downvote: "Someone downvoted your post"
+    comment: "Someone commented on your post"
+    mention: "Someone mentioned you in a post"
+  comment:
+    upvote: "Someone upvoted your comment"
+    downvote: "Someone downvoted your comment"
+    reply: "Someone replied to your comment"
+    mention: "Someone mentioned you in a comment"
+
 dashboard:
   communityDashboard: "Community Dashboard"
   welcomeBack: "Welcome back, {{username}}! Here's what's happening in the community."
@@ -113,3 +125,69 @@ credits:
   dailyBonusClaimed: "Daily Bonus Claimed"
   recentTransactions: "Recent Transactions"
   noTransactions: "No transactions yet"
+
+errors:
+  api:
+    POST:
+      NOT_FOUND: "Post not found"
+      NOT_AUTHORIZED: "You are not authorized to perform this action"
+    AUTH:
+      UNAUTHORIZED: "Please log in to continue"
+    VALIDATION:
+      ERROR: "Validation error"
+      REQUIRED: "{{field}} is required"
+      INVALID: "{{field}} is invalid"
+      UNIQUE_CONSTRAINT: "This {{field}} already exists"
+    METHOD_NOT_ALLOWED: "Method not allowed"
+    INTERNAL_SERVER_ERROR: "An unexpected error occurred"
+    NOT_FOUND: "Resource not found"
+    RATE_LIMIT:
+      EXCEEDED: "Too many requests. Please try again in {{time}} seconds"
+      HEADERS:
+        LIMIT: "Rate limit: {{limit}} requests"
+        REMAINING: "Remaining requests: {{remaining}}"
+        RESET: "Rate limit resets in {{time}} seconds"
+    COMMENT:
+      NOT_FOUND: "Comment not found"
+      PARENT_NOT_FOUND: "Parent comment not found"
+      NOT_AUTHORIZED: "You are not authorized to perform this action"
+      VALIDATION:
+        CONTENT_REQUIRED: "Comment content is required"
+        CONTENT_TOO_LONG: "Comment content cannot exceed 2000 characters"
+        INVALID_POST_ID: "Invalid post ID"
+        INVALID_PARENT_ID: "Invalid parent comment ID"
+        INVALID_AUTHOR_ID: "Invalid author ID"
+    CATEGORY:
+      NOT_FOUND: "Category not found"
+      ALREADY_EXISTS: "A category with this name or slug already exists"
+      HAS_POSTS: "Cannot delete category with existing posts"
+      VALIDATION:
+        NAME_REQUIRED: "Category name is required"
+        NAME_TOO_LONG: "Category name cannot exceed 50 characters"
+        SLUG_REQUIRED: "Category slug is required"
+        SLUG_TOO_LONG: "Category slug cannot exceed 50 characters"
+        INVALID_SLUG: "Category slug can only contain lowercase letters, numbers, and hyphens"
+        DESCRIPTION_TOO_LONG: "Category description cannot exceed 500 characters"
+        INVALID_CREDIT_REQUIREMENT: "Credit requirement must be a positive number"
+    TAG:
+      NOT_FOUND: "Tag not found"
+      ALREADY_EXISTS: "A tag with this name or slug already exists"
+      HAS_POSTS: "Cannot delete tag that is used in posts"
+      VALIDATION:
+        NAME_REQUIRED: "Tag name is required"
+        NAME_TOO_LONG: "Tag name cannot exceed 30 characters"
+        SLUG_REQUIRED: "Tag slug is required"
+        SLUG_TOO_LONG: "Tag slug cannot exceed 30 characters"
+        INVALID_SLUG: "Tag slug can only contain lowercase letters, numbers, and hyphens"
+    VOTE:
+      VALIDATION:
+        TARGET_REQUIRED: "Must specify either a post or comment to vote on"
+        SINGLE_TARGET_ALLOWED: "Can only vote on either a post or comment, not both"
+        INVALID_POST_ID: "Invalid post ID"
+        INVALID_COMMENT_ID: "Invalid comment ID"
+        INVALID_VOTE_TYPE: "Vote must be either upvote (1) or downvote (-1)"
+      RATE_LIMIT_EXCEEDED: "You're voting too quickly. Please wait a moment."
+    NOTIFICATION:
+      VALIDATION:
+        INVALID_ID: "Invalid notification ID"
+      NOT_FOUND: "Notification not found"

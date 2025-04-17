@@ -8,6 +8,7 @@ import { I18nProvider } from "@/contexts/i18n-provider"
 import { cookies } from "next/headers"
 import "./globals.css"
 import {DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES} from "@/lib/i18n";
+import { NotificationCleanupService } from '@/lib/services/notification-cleanup.service'
 
 const geist = Geist({
   subsets: ["latin"],
@@ -16,6 +17,12 @@ const geist = Geist({
 export const metadata: Metadata = {
   title: "Community Discussion Platform",
   description: "A community discussion platform built with Next.js and Supabase",
+}
+
+// Initialize notification cleanup service
+if (process.env.NODE_ENV === 'production') {
+  const cleanupService = new NotificationCleanupService()
+  cleanupService.scheduleCleanup()
 }
 
 export default async function RootLayout({
