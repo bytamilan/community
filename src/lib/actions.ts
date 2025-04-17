@@ -1,14 +1,16 @@
 "use server"
 
-import {createClient} from "@/lib/supabase/server"
-import {redirect} from "next/navigation"
-import {revalidatePath} from "next/cache"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
+
+type ActionResult<T = void> = Promise<{ error: string } | ({ success: true } & T)>
 
 // Auth actions
-export async function signIn(prevState: any, formData: FormData) {
+export async function signIn(prevState: never, formData: FormData): ActionResult {
     // Check if formData is valid
     if (!formData) {
-        return {error: "Form data is missing"}
+        return { error: "Form data is missing" }
     }
 
     const email = formData.get("email")
@@ -16,33 +18,33 @@ export async function signIn(prevState: any, formData: FormData) {
 
     // Validate required fields
     if (!email || !password) {
-        return {error: "Email and password are required"}
+        return { error: "Email and password are required" }
     }
 
     const supabase = await createClient()
 
     try {
-        const {error} = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
             email: email.toString(),
             password: password.toString(),
         })
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
         // Return success instead of redirecting directly
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Login error:", error)
-        return {error: "An unexpected error occurred. Please try again."}
+        return { error: "An unexpected error occurred. Please try again." }
     }
 }
 
-export async function signUp(prevState: any, formData: FormData) {
+export async function signUp(prevState: never, formData: FormData): ActionResult {
     // Check if formData is valid
     if (!formData) {
-        return {error: "Form data is missing"}
+        return { error: "Form data is missing" }
     }
 
     const email = formData.get("email")
@@ -51,24 +53,24 @@ export async function signUp(prevState: any, formData: FormData) {
 
     // Validate required fields
     if (!email || !password || !username) {
-        return {error: "Email, username, and password are required"}
+        return { error: "Email, username, and password are required" }
     }
     const supabase = await createClient()
 
     try {
         // Check if username is already taken
-        const {data: existingUser} = await supabase
+        const { data: existingUser } = await supabase
             .from("profiles")
             .select("username")
             .eq("username", username.toString())
             .single()
 
         if (existingUser) {
-            return {error: "Username is already taken"}
+            return { error: "Username is already taken" }
         }
 
         // Sign up the user
-        const {error, data} = await supabase.auth.signUp({
+        const { error, data } = await supabase.auth.signUp({
             email: email.toString(),
             password: password.toString(),
             options: {
@@ -79,34 +81,33 @@ export async function signUp(prevState: any, formData: FormData) {
         })
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
-        return {success: "Check your email to confirm your account."}
+        return { success: "Check your email to confirm your account." }
     } catch (error) {
         console.error("Sign up error:", error)
-        return {error: "An unexpected error occurred. Please try again."}
+        return { error: "An unexpected error occurred. Please try again." }
     }
 }
 
-export async function signOut() {
+export async function signOut(): ActionResult {
     const supabase = await createClient()
-
 
     await supabase.auth.signOut()
     redirect("/auth/login")
+    return { success: true }
 }
 
 // Post actions
-export async function createPost(formData: FormData) {
+export async function createPost(formData: FormData): ActionResult<{ postId: string }> {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in to create a post"}
+        return { error: "You must be logged in to create a post" }
     }
 
     const title = formData.get("title") as string
@@ -116,12 +117,12 @@ export async function createPost(formData: FormData) {
     const tagIds = formData.getAll("tags") as string[]
 
     if (!title || !content || !categoryId) {
-        return {error: "Title, content, and category are required"}
+        return { error: "Title, content, and category are required" }
     }
 
     try {
         // Insert the post
-        const {data: post, error: postError} = await supabase
+        const { data: post, error: postError } = await supabase
             .from("posts")
             .insert({
                 title,
@@ -134,7 +135,7 @@ export async function createPost(formData: FormData) {
             .single()
 
         if (postError) {
-            return {error: postError.message}
+            return { error: postError.message }
         }
 
         // Add tags if provided
@@ -144,7 +145,7 @@ export async function createPost(formData: FormData) {
                 tag_id: Number.parseInt(tagId),
             }))
 
-            const {error: tagError} = await supabase.from("post_tags").insert(tagEntries)
+            const { error: tagError } = await supabase.from("post_tags").insert(tagEntries)
 
             if (tagError) {
                 console.error("Error adding tags:", tagError)
@@ -152,22 +153,21 @@ export async function createPost(formData: FormData) {
         }
 
         revalidatePath("/")
-        return {success: true, postId: post.id}
+        return { success: true, postId: post.id }
     } catch (error) {
         console.error("Error creating post:", error)
-        return {error: "Failed to create post. Please try again."}
+        return { error: "Failed to create post. Please try again." }
     }
 }
 
-export async function createComment(formData: FormData) {
+export async function createComment(formData: FormData): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in to comment"}
+        return { error: "You must be logged in to comment" }
     }
 
     const content = formData.get("content") as string
@@ -175,11 +175,11 @@ export async function createComment(formData: FormData) {
     const parentId = (formData.get("parent_id") as string) || null
 
     if (!content || !postId) {
-        return {error: "Content and post ID are required"}
+        return { error: "Content and post ID are required" }
     }
 
     try {
-        const {error} = await supabase.from("comments").insert({
+        const { error } = await supabase.from("comments").insert({
             content,
             author_id: user.id,
             post_id: postId,
@@ -187,31 +187,30 @@ export async function createComment(formData: FormData) {
         })
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
         revalidatePath(`/posts/${postId}`)
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Error creating comment:", error)
-        return {error: "Failed to create comment. Please try again."}
+        return { error: "Failed to create comment. Please try again." }
     }
 }
 
-export async function voteOnPost(postId: string, voteType: 1 | -1) {
+export async function voteOnPost(postId: string, voteType: 1 | -1): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in to vote"}
+        return { error: "You must be logged in to vote" }
     }
 
     try {
         // Check if user has already voted on this post
-        const {data: existingVote} = await supabase
+        const { data: existingVote } = await supabase
             .from("votes")
             .select("id, vote_type")
             .eq("user_id", user.id)
@@ -230,7 +229,7 @@ export async function voteOnPost(postId: string, voteType: 1 | -1) {
                 })
             } else {
                 // Change vote type
-                await supabase.from("votes").update({vote_type: voteType}).eq("id", existingVote.id)
+                await supabase.from("votes").update({ vote_type: voteType }).eq("id", existingVote.id)
 
                 // Update post vote count (double the effect since we're flipping the vote)
                 await supabase.rpc("update_post_votes", {
@@ -254,27 +253,26 @@ export async function voteOnPost(postId: string, voteType: 1 | -1) {
         }
 
         revalidatePath(`/posts/${postId}`)
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Error voting on post:", error)
-        return {error: "Failed to register vote. Please try again."}
+        return { error: "Failed to register vote. Please try again." }
     }
 }
 
-export async function voteOnComment(commentId: string, voteType: 1 | -1) {
+export async function voteOnComment(commentId: string, voteType: 1 | -1): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in to vote"}
+        return { error: "You must be logged in to vote" }
     }
 
     try {
         // Check if user has already voted on this comment
-        const {data: existingVote} = await supabase
+        const { data: existingVote } = await supabase
             .from("votes")
             .select("id, vote_type")
             .eq("user_id", user.id)
@@ -293,7 +291,7 @@ export async function voteOnComment(commentId: string, voteType: 1 | -1) {
                 })
             } else {
                 // Change vote type
-                await supabase.from("votes").update({vote_type: voteType}).eq("id", existingVote.id)
+                await supabase.from("votes").update({ vote_type: voteType }).eq("id", existingVote.id)
 
                 // Update comment vote count (double the effect since we're flipping the vote)
                 await supabase.rpc("update_comment_votes", {
@@ -317,28 +315,27 @@ export async function voteOnComment(commentId: string, voteType: 1 | -1) {
         }
 
         // Get the post ID for the comment to revalidate the path
-        const {data: comment} = await supabase.from("comments").select("post_id").eq("id", commentId).single()
+        const { data: comment } = await supabase.from("comments").select("post_id").eq("id", commentId).single()
 
         if (comment) {
             revalidatePath(`/posts/${comment.post_id}`)
         }
 
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Error voting on comment:", error)
-        return {error: "Failed to register vote. Please try again."}
+        return { error: "Failed to register vote. Please try again." }
     }
 }
 
-export async function updateProfile(formData: FormData) {
+export async function updateProfile(formData: FormData): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in to update your profile"}
+        return { error: "You must be logged in to update your profile" }
     }
 
     const username = formData.get("username") as string
@@ -347,12 +344,12 @@ export async function updateProfile(formData: FormData) {
     const avatarUrl = formData.get("avatar_url") as string
 
     if (!username) {
-        return {error: "Username is required"}
+        return { error: "Username is required" }
     }
 
     try {
         // Check if username is already taken by another user
-        const {data: existingUser} = await supabase
+        const { data: existingUser } = await supabase
             .from("profiles")
             .select("id")
             .eq("username", username)
@@ -360,10 +357,10 @@ export async function updateProfile(formData: FormData) {
             .maybeSingle()
 
         if (existingUser) {
-            return {error: "Username is already taken"}
+            return { error: "Username is already taken" }
         }
 
-        const {error} = await supabase
+        const { error } = await supabase
             .from("profiles")
             .update({
                 username,
@@ -374,118 +371,115 @@ export async function updateProfile(formData: FormData) {
             .eq("id", user.id)
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
         revalidatePath("/profile")
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Error updating profile:", error)
-        return {error: "Failed to update profile. Please try again."}
+        return { error: "Failed to update profile. Please try again." }
     }
 }
 
 // Credit actions
-export async function claimDailyLoginBonus() {
+export async function claimDailyLoginBonus(): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in to claim a bonus"}
+        return { error: "You must be logged in to claim a bonus" }
     }
 
     try {
-        const {data, error} = await supabase.rpc("award_daily_login_bonus", {
+        const { data, error } = await supabase.rpc("award_daily_login_bonus", {
             user_id: user.id,
         })
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
         if (data) {
             revalidatePath("/credits")
-            return {success: "You've received 5 credits as a daily login bonus!"}
+            return { success: "You've received 5 credits as a daily login bonus!" }
         } else {
-            return {error: "You've already claimed your daily bonus today."}
+            return { error: "You've already claimed your daily bonus today." }
         }
     } catch (error) {
         console.error("Error claiming daily bonus:", error)
-        return {error: "Failed to claim daily bonus. Please try again."}
+        return { error: "Failed to claim daily bonus. Please try again." }
     }
 }
 
 // Notification actions
-export async function markNotificationRead(formData: FormData) {
+export async function markNotificationRead(formData: FormData): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in"}
+        return { error: "You must be logged in" }
     }
 
     const notificationId = formData.get("notification_id") as string
 
     if (!notificationId) {
-        return {error: "Notification ID is required"}
+        return { error: "Notification ID is required" }
     }
 
     try {
         // First check if the notification belongs to the user
-        const {data: notification} = await supabase
+        const { data: notification } = await supabase
             .from("notifications")
             .select("user_id")
             .eq("id", notificationId)
             .single()
 
         if (!notification || notification.user_id !== user.id) {
-            return {error: "Notification not found or access denied"}
+            return { error: "Notification not found or access denied" }
         }
 
-        const {error} = await supabase.from("notifications").update({is_read: true}).eq("id", notificationId)
+        const { error } = await supabase.from("notifications").update({ is_read: true }).eq("id", notificationId)
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Error marking notification as read:", error)
-        return {error: "Failed to mark notification as read"}
+        return { error: "Failed to mark notification as read" }
     }
 }
 
-export async function markAllNotificationsRead() {
+export async function markAllNotificationsRead(): ActionResult {
     const supabase = await createClient()
 
-
     const {
-        data: {user},
+        data: { user },
     } = await supabase.auth.getUser()
     if (!user) {
-        return {error: "You must be logged in"}
+        return { error: "You must be logged in" }
     }
 
     try {
-        const {error} = await supabase
+        const { error } = await supabase
             .from("notifications")
-            .update({is_read: true})
+            .update({ is_read: true })
             .eq("user_id", user.id)
             .eq("is_read", false)
 
         if (error) {
-            return {error: error.message}
+            return { error: error.message }
         }
 
-        return {success: true}
+        return { success: true }
     } catch (error) {
         console.error("Error marking all notifications as read:", error)
-        return {error: "Failed to mark all notifications as read"}
+        return { error: "Failed to mark all notifications as read" }
     }
 }

@@ -8,25 +8,25 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { CommentForm } from "@/components/comment-form"
 import { VoteButtons } from "@/components/vote-buttons"
 import { MessageSquare } from "lucide-react"
-import type { Comment } from "@/lib/types"
+import type { Comment } from "@/types"
 
 interface CommentListProps {
   comments: Comment[]
 }
 
+interface CommentItemProps {
+  comment: Comment
+  isReply?: boolean
+}
+
 export function CommentList({ comments }: CommentListProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {comments.map((comment) => (
         <CommentItem key={comment.id} comment={comment} />
       ))}
     </div>
   )
-}
-
-interface CommentItemProps {
-  comment: Comment
-  isReply?: boolean
 }
 
 function CommentItem({ comment, isReply = false }: CommentItemProps) {
@@ -50,22 +50,32 @@ function CommentItem({ comment, isReply = false }: CommentItemProps) {
                     {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                   </span>
                 </div>
-                <VoteButtons commentId={comment.id} upvotes={comment.upvotes} downvotes={comment.downvotes} />
+                <VoteButtons
+                  commentId={comment.id}
+                  upvotes={comment.upvotes}
+                  downvotes={comment.downvotes}
+                  type="comment"
+                />
               </div>
-              <div className="mt-2">{comment.content}</div>
+              <p className="mt-2">{comment.content}</p>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="py-2">
-          <Button variant="ghost" size="sm" className="text-xs" onClick={() => setShowReplyForm(!showReplyForm)}>
-            <MessageSquare className="h-3 w-3 mr-1" />
-            {showReplyForm ? "Cancel" : "Reply"}
+        <CardFooter>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-2"
+            onClick={() => setShowReplyForm(!showReplyForm)}
+          >
+            <MessageSquare className="h-4 w-4" />
+            Reply
           </Button>
         </CardFooter>
       </Card>
 
       {showReplyForm && (
-        <div className="mt-4 ml-8">
+        <div className="mt-4">
           <CommentForm postId={comment.post_id} parentId={comment.id} onCancel={() => setShowReplyForm(false)} />
         </div>
       )}

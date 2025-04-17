@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle, AlertCircle } from "lucide-react"
 import { Pagination } from "@/components/pagination"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { cookies } from "next/headers"
-import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "@/lib/i18n"
+import { ServerTranslation } from "@/components/server-translation"
 import Link from "next/link"
+import type { Post, Category, Tag } from "@/types"
 
 const POSTS_PER_PAGE = 10
 
@@ -27,31 +27,11 @@ export default async function Home({
   const tagSlug = searchParams.tag
   const page = Number(searchParams.page) || 1
   const offset = (page - 1) * POSTS_PER_PAGE
-
-  // Get language from query params or cookies
-  let lang = DEFAULT_LANGUAGE
-
-  if (searchParams?.lang && SUPPORTED_LANGUAGES.includes(searchParams.lang)) {
-    lang = searchParams.lang
-  } else {
-    const cookieStore = cookies()
-    const langCookie = cookieStore.get("i18nextLng")?.value
-
-    if (langCookie && SUPPORTED_LANGUAGES.includes(langCookie)) {
-      lang = langCookie
-    }
-  }
-
-  // Helper function for server-side translation
-  const t = async (key: string, params?: Record<string, any>) => {
-    return ()=>{}
-  }
-
   // Fetch data with error handling
-  let posts: any[] = []
+  let posts: Post[] = []
   let count = 0
-  let categories: any[] = []
-  let tags: any[] = []
+  let categories: Category[] = []
+  let tags: Tag[] = []
   let error = false
 
   try {
@@ -88,40 +68,73 @@ export default async function Home({
               <Button className="w-full" asChild>
                 <Link href="/new-post">
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  {await t("posts.createPost")}
+                  <ServerTranslation translationKey="posts.createPost">
+                    {(text) => text}
+                  </ServerTranslation>
                 </Link>
               </Button>
             )}
           </div>
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">{await t("navigation.categories")}</h2>
+            <h2 className="text-lg font-semibold">
+              <ServerTranslation translationKey="navigation.categories">
+                {(text) => text}
+              </ServerTranslation>
+            </h2>
             <CategoryFilter categories={categories} selectedSlug={categorySlug} />
           </div>
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">{await t("posts.tags")}</h2>
+            <h2 className="text-lg font-semibold">
+              <ServerTranslation translationKey="posts.tags">
+                {(text) => text}
+              </ServerTranslation>
+            </h2>
             <TagFilter tags={tags.slice(0, 10)} selectedSlug={tagSlug} />
             <Button variant="link" size="sm" asChild className="px-0">
-              <Link href="/tags">{await t("common.view")}</Link>
+              <Link href="/tags">
+                <ServerTranslation translationKey="common.view">
+                  {(text) => text}
+                </ServerTranslation>
+              </Link>
             </Button>
           </div>
         </div>
       </div>
       <div className="md:col-span-3">
         <h1 className="text-3xl font-bold mb-6">
-          {categorySlug
-            ? await t("posts.postedIn", {
-                category: categories.find((c) => c.slug === categorySlug)?.name || categorySlug,
-              })
-            : tagSlug
-              ? await t("posts.tags", { tag: tags.find((t) => t.slug === tagSlug)?.name || tagSlug })
-              : await t("posts.recentDiscussions")}
+          <ServerTranslation 
+            translationKey={
+              categorySlug 
+                ? "posts.postedIn"
+                : tagSlug
+                  ? "posts.tags"
+                  : "posts.recentDiscussions"
+            }
+            params={
+              categorySlug
+                ? { category: categories.find((c) => c.slug === categorySlug)?.name || categorySlug }
+                : tagSlug
+                  ? { tag: tags.find((t) => t.slug === tagSlug)?.name || tagSlug }
+                  : undefined
+            }
+          >
+            {(text) => text}
+          </ServerTranslation>
         </h1>
 
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{await t("common.error")}</AlertTitle>
-            <AlertDescription>{await t("posts.errorLoadingPosts")}</AlertDescription>
+            <AlertTitle>
+              <ServerTranslation translationKey="common.error">
+                {(text) => text}
+              </ServerTranslation>
+            </AlertTitle>
+            <AlertDescription>
+              <ServerTranslation translationKey="posts.errorLoadingPosts">
+                {(text) => text}
+              </ServerTranslation>
+            </AlertDescription>
           </Alert>
         )}
 
@@ -142,13 +155,23 @@ export default async function Home({
           </>
         ) : !error ? (
           <div className="text-center py-12 border rounded-lg">
-            <h3 className="text-lg font-medium">{await t("posts.noPosts")}</h3>
+            <h3 className="text-lg font-medium">
+              <ServerTranslation translationKey="posts.noPosts">
+                {(text) => text}
+              </ServerTranslation>
+            </h3>
             <p className="text-muted-foreground mt-1">
-              {session ? await t("posts.beFirstToPost") : await t("posts.signInToPost")}
+              <ServerTranslation translationKey={session ? "posts.beFirstToPost" : "posts.signInToPost"}>
+                {(text) => text}
+              </ServerTranslation>
             </p>
             {session && (
               <Button className="mt-4" asChild>
-                <Link href="/new-post">{await t("posts.createPost")}</Link>
+                <Link href="/new-post">
+                  <ServerTranslation translationKey="posts.createPost">
+                    {(text) => text}
+                  </ServerTranslation>
+                </Link>
               </Button>
             )}
           </div>

@@ -24,7 +24,7 @@ export default function SearchPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [users, setUsers] = useState<Profile[]>([])
 
-  const supabase = await createClient()
+  const supabase =  createClient()
 
   useEffect(() => {
     if (query) {

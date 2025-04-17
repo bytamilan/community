@@ -6,6 +6,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import { cache } from 'react';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '@/lib/i18n';
+import { ReactNode } from "react";
 
 // Cache translations to avoid repeated file reads
 const translationCache = new Map<string, Record<string, any>>();
@@ -101,18 +102,15 @@ export async function t(
  * ServerTranslation component for use in Server Components
  */
 interface ServerTranslationProps {
-  lang: string;
-  keyPath: string;
-  params?: Record<string, any>;
-  namespace?: string;
+  translationKey: string
+  params?: Record<string, any>
+  children: (translatedText: string) => ReactNode
 }
 
-export default async function ServerTranslation({
-                                                  lang,
-                                                  keyPath,
-                                                  params,
-                                                  namespace = 'app'
-                                                }: ServerTranslationProps) {
-  const translatedText = await t(lang, keyPath, params, namespace);
-  return <>{translatedText}</>;
+export async function ServerTranslation({ translationKey, params, children }: ServerTranslationProps) {
+  // TODO: Implement actual translation logic
+  const translatedText = translationKey
+
+  // Return the rendered children with the translated text
+  return children(translatedText)
 }

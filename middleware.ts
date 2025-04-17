@@ -36,12 +36,12 @@ export async function middleware(request: NextRequest) {
   const preferredLanguage = acceptLanguage
     .split(",")
     .map((lang) => lang.split(";")[0].trim())
-    .find((lang) => SUPPORTED_LANGUAGES.includes(lang.substring(0, 2) as any))
+    .find((lang) => SUPPORTED_LANGUAGES.includes(lang.substring(0, 2) as string))
 
   // If a supported language is found, redirect with that language
   if (preferredLanguage) {
     const lang = preferredLanguage.substring(0, 2)
-    if (SUPPORTED_LANGUAGES.includes(lang as any)) {
+    if (SUPPORTED_LANGUAGES.includes(lang as string)) {
       const url = new URL(request.url)
       url.searchParams.set("lang", lang)
       return NextResponse.redirect(url)

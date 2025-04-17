@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import type { Category, Comment, Post, Profile, Tag, Notification } from "@/lib/types"
+import type { Category, Comment, Post, Profile, Tag, Notification } from "@/types"
 
 // Profile functions
 export async function getProfile(userId: string): Promise<Profile | null> {
