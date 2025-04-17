@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Category {
+  id                Int      @id @default(autoincrement())
+  name              String   @unique
+  slug              String   @unique
+  description       String?
+  creditRequirement Int?     @default(0) @map("credit_requirement")
+  isPremium         Boolean? @default(false) @map("is_premium")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  posts             Post[]
+
+  @@map("categories")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Comment {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  content            String
+  authorId           String              @map("author_id") @db.Uuid
+  postId             String              @map("post_id") @db.Uuid
+  parentId           String?             @map("parent_id") @db.Uuid
+  upvotes            Int?                @default(0)
+  downvotes          Int?                @default(0)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  profile            Profile             @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  parent             Comment?            @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  childComments      Comment[]           @relation("CommentToComment")
+  post               Post                @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  creditTransactions CreditTransaction[]
+  notifications      Notification[]
+  votes              Vote[]
+
+  @@map("comments")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model CreditTransaction {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  amount      Int
+  description String
+  postId      String?  @map("post_id") @db.Uuid
+  commentId   String?  @map("comment_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  comment     Comment? @relation(fields: [commentId], references: [id], onUpdate: NoAction)
+  post        Post?    @relation(fields: [postId], references: [id], onUpdate: NoAction)
+  profile     Profile  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("credit_transactions")
+}
+
+model Notification {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  senderId  String?  @map("sender_id") @db.Uuid
+  type      String
+  content   String
+  postId    String?  @map("post_id") @db.Uuid
+  commentId String?  @map("comment_id") @db.Uuid
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model PostTag {
+  postId String @map("post_id") @db.Uuid
+  tagId  Int    @map("tag_id")
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Post {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  title              String
+  content            String
+  authorId           String              @map("author_id") @db.Uuid
+  categoryId         Int                 @map("category_id")
+  viewCount          Int?                @default(0) @map("view_count")
+  upvotes            Int?                @default(0)
+  downvotes          Int?                @default(0)
+  creditCost         Int?                @default(1) @map("credit_cost")
+  isPublished        Boolean?            @default(true) @map("is_published")
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  comments           Comment[]
+  creditTransactions CreditTransaction[]
+  notifications      Notification[]
+  postTags           PostTag[]
+  author             Profile             @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  category           Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  votes              Vote[]
+
+  @@map("posts")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Profile {
+  id                 String              @id @db.Uuid
+  username           String              @unique
+  fullName           String?             @map("full_name")
+  avatarUrl          String?             @map("avatar_url")
+  bio                String?
+  credits            Int                 @default(10)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  comments           Comment[]
+  creditTransactions CreditTransaction[]
+  posts              Post[]
+  votes              Vote[]
+  permissions        ProfilePermission[]
+
+  @@map("profiles")
+}
+
+model Permission {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  name               String              @unique // e.g., "comments.read", "posts.write"
+  description        String?
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  profilePermissions ProfilePermission[]
+
+  @@map("permissions")
+}
+
+model ProfilePermission {
+  profileId    String     @map("profile_id") @db.Uuid
+  permissionId String     @map("permission_id") @db.Uuid
+  granted      Boolean    @default(true)
+  grantedAt    DateTime   @default(now()) @map("granted_at") @db.Timestamptz(6)
+  profile      Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([profileId, permissionId])
+  @@map("profile_permissions")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Tag {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  postTags  PostTag[]
+
+  @@map("tags")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Vote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String?  @map("post_id") @db.Uuid
+  commentId String?  @map("comment_id") @db.Uuid
+  voteType  Int      @map("vote_type")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  profile   Profile  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, postId, commentId])
+  @@map("votes")
+}

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { createPost } from "@/lib/actions"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import type { Category, Tag } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -38,7 +38,6 @@ export function NewPostForm({ categories, tags }: NewPostFormProps) {
       title: "",
       content: "",
       category_id: "",
-      credit_cost: "1",
       tags: [],
     },
   })
@@ -50,7 +49,6 @@ export function NewPostForm({ categories, tags }: NewPostFormProps) {
     formData.append("title", values.title)
     formData.append("content", values.content)
     formData.append("category_id", values.category_id)
-    formData.append("credit_cost", values.credit_cost)
 
     if (values.tags) {
       values.tags.forEach((tag) => {
@@ -130,31 +128,6 @@ export function NewPostForm({ categories, tags }: NewPostFormProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="credit_cost"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Credit Cost</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select credit cost" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="1">1 Credit (Default)</SelectItem>
-                    <SelectItem value="5">5 Credits</SelectItem>
-                    <SelectItem value="10">10 Credits</SelectItem>
-                    <SelectItem value="20">20 Credits</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>Higher credit costs can indicate more valuable content</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
