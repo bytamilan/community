@@ -1,15 +1,9 @@
-import { StringIdEntity, NumberIdEntity } from './base';
+import type { Profile as PrismaProfile, Permission as PrismaPermission } from '@/generated/prisma'
 
-export type Role = NumberIdEntity & {
-  name: string;
+export type Profile = PrismaProfile & {
+  avatarUrl: string | null // map from avatar_url
+  fullName: string | null // map from full_name
+  permissions?: PrismaPermission[]
 }
 
-export type Profile = StringIdEntity & {
-  username: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  bio: string | null;
-  credits: number;
-  role_id: number;
-  role?: Role;
-}
+// No need for Role type as it's handled by Permissions in Prisma schema

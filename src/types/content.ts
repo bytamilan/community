@@ -1,31 +1,16 @@
-import { StringIdEntity, NumberIdEntity } from './base';
-import { Profile } from './user';
+import type { Category as PrismaCategory, Tag as PrismaTag, Post as PrismaPost } from '@/generated/prisma'
+import { Profile } from './user'
 
-export type Category = NumberIdEntity & {
-  name: string;
-  slug: string;
-  description: string | null;
-  credit_requirement: number;
-  is_premium: boolean;
+export type Category = PrismaCategory & {
+  isPremium: boolean // map from is_premium
+  creditRequirement: number | null // map from credit_requirement
 }
 
-export type Tag = NumberIdEntity & {
-  name: string;
-  slug: string;
-}
+export type Tag = PrismaTag
 
-export type Post = StringIdEntity & {
-  title: string;
-  content: string;
-  author_id: string;
-  author?: Profile;
-  category_id: number;
-  category?: Category;
-  view_count: number;
-  upvotes: number;
-  downvotes: number;
-  credit_cost: number;
-  is_published: boolean;
-  tags?: Tag[];
-  commentCount?: number;
+export type Post = PrismaPost & {
+  author?: Profile
+  category?: Category
+  tags?: Tag[]
+  commentCount?: number
 }

@@ -1,13 +1,2 @@
-export type StringIdEntity = {
-  id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export type NumberIdEntity = {
-  id: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export type BaseEntity = StringIdEntity | NumberIdEntity;
+// Base types are no longer needed as we're using Prisma's generated types
+// which already include id and timestamp fields
