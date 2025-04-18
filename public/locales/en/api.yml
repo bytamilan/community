@@ -1,0 +1,83 @@
+routes:
+  posts:
+    base: /api/posts
+    endpoints:
+      list:
+        method: GET
+        auth: public
+        schema: postQuerySchema
+        rateLimit:
+          windowSize: 60000
+          maxRequests: 50
+      create:
+        method: POST
+        auth: protected
+        schema: createPostSchema
+      getById:
+        path: /:id
+        method: GET
+        auth: public
+        schema: none
+      update:
+        path: /:id
+        method: PATCH
+        auth: protected
+        schema: updatePostSchema
+      delete:
+        path: /:id
+        method: DELETE
+        auth: protected
+        schema: none
+
+  comments:
+    base: /api/comments
+    endpoints:
+      list:
+        method: GET
+        auth: public
+        schema: commentQuerySchema
+      create:
+        method: POST
+        auth: protected
+        schema: createCommentSchema
+      getById:
+        path: /:id
+        method: GET
+        auth: public
+      update:
+        path: /:id
+        method: PATCH
+        auth: protected
+        schema: updateCommentSchema
+      delete:
+        path: /:id
+        method: DELETE
+        auth: protected
+
+  categories:
+    base: /api/categories
+    endpoints:
+      list:
+        method: GET
+        auth: public
+        schema: categoryQuerySchema
+        rateLimit:
+          windowSize: 60000
+          maxRequests: 100
+      create:
+        method: POST
+        auth: protected
+        schema: createCategorySchema
+        roles: [admin]
+
+errors:
+  validation:
+    INVALID_REQUEST: 'Invalid request data'
+    UNIQUE_CONSTRAINT: 'This {field} already exists'
+    REQUIRED_FIELD: '{field} is required'
+  auth:
+    UNAUTHORIZED: 'You must be logged in to access this resource'
+    FORBIDDEN: 'You do not have permission to perform this action'
+  server:
+    INTERNAL_ERROR: 'An internal server error occurred'
+    NOT_FOUND: 'Resource not found'
