@@ -24,7 +24,7 @@ export async function withOptionalAuth(
   req: NextRequest,
   handler: (userId: string | null) => Promise<Response>
 ) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   return handler(user?.id || null)
 }

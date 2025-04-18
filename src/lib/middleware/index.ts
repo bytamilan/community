@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server'
 import { withAuth, withOptionalAuth } from './auth'
 import { withErrorBoundary } from './error-boundary'
 import { withRateLimit } from './rate-limit'

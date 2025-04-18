@@ -1,5 +1,5 @@
-import { PaginationParams } from '../types/api'
-import { prisma } from '../db'
+import { PaginationParams } from '@/types/api'
+import { prisma } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 
 export class BaseService<T> {
