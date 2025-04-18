@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { CategoryService } from '@/lib/services/category.service'
 import { updateCategorySchema } from '@/lib/validation/category.schema'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { withProtectedApi, withPublicApi } from '@/lib/middleware'
 
 const categoryService = new CategoryService()

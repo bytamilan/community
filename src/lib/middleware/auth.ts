@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { ApiException } from '../types/api'
+import { ApiException } from '../../types/api'
 
 export async function withAuth(
   req: NextRequest,

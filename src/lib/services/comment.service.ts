@@ -1,5 +1,5 @@
 import { BaseService } from './base.service'
-import { ApiException } from '../types/api'
+import { ApiException } from '../../types/api'
 import { NotificationService } from './notification.service'
 import {prisma} from "@/lib/db";
 import {Comment} from "@/types";

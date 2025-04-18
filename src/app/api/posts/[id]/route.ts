@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { PostService } from '@/lib/services/post.service'
 import { updatePostSchema } from '@/lib/validation/post.schema'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { createApiHandler, validateRequest } from '@/lib/middleware/api-route'
 
 const postService = new PostService()

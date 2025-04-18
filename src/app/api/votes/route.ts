@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { VoteService } from '@/lib/services/vote.service'
 import { createVoteSchema, getVoteSchema } from '@/lib/validation/vote.schema'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { withProtectedApi, withCustomRateLimit } from '@/lib/middleware'
 
 const voteService = new VoteService()

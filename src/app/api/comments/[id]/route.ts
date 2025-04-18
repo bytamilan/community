@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { CommentService } from '@/lib/services/comment.service'
 import { updateCommentSchema } from '@/lib/validation/comment.schema'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { withProtectedApi, withPublicApi } from '@/lib/middleware'
 
 const commentService = new CommentService()

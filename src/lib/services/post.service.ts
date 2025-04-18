@@ -1,5 +1,5 @@
 import { BaseService } from './base.service'
-import { ApiException } from '../types/api'
+import { ApiException } from '../../types/api'
 import {Post} from "@/types";
 import {prisma} from "@/lib/db";
 

@@ -1,4 +1,4 @@
-import { prisma } from '../db'
+import { db as prisma } from '@/lib/db'
 import { NotificationService } from './notification.service'
 
 export class NotificationCleanupService {
@@ -43,7 +43,6 @@ export class NotificationCleanupService {
             senderId: {
               not: null,
             },
-            sender: null, // Sender doesn't exist
           },
         ],
       },

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { ApiException, ApiResponse, PaginatedResponse, PaginationParams } from './types/api'
+import { ApiException, ApiResponse, PaginatedResponse, PaginationParams } from '../types/api'
 import i18next from 'i18next'
 
 export function createSuccessResponse<T>(data: T, message?: string): NextResponse<ApiResponse<T>> {

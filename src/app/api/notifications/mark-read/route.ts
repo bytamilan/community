@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { NotificationService } from '@/lib/services/notification.service'
 import { markAsReadSchema } from '@/lib/validation/notification.schema'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { withProtectedApi } from '@/lib/middleware'
 
 const notificationService = new NotificationService()

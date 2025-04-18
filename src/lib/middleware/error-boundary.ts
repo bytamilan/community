@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createErrorResponse } from '../api-utils'
-import { ApiException } from '../types/api'
+import { ApiException } from '../../types/api'
 import i18next from 'i18next'
 
 export async function withErrorBoundary(

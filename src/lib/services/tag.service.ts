@@ -1,8 +1,8 @@
 import { BaseService } from './base.service'
-import { ApiException } from '../types/api'
+import { ApiException } from '@/types/api'
 import {Tag} from "@/types";
 import {prisma} from "@/lib/db";
-import {PostTag} from "@/generated/prisma";
+import { PostTag } from '@prisma/client';
 
 export class TagService extends BaseService<Tag> {
   constructor() {

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { TagService } from '@/lib/services/tag.service'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { withPublicApi } from '@/lib/middleware'
 
 const tagService = new TagService()

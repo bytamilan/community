@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { TagService } from '@/lib/services/tag.service'
 import { createTagSchema, tagQuerySchema } from '@/lib/validation/tag.schema'
-import { ApiException } from '@/lib/types/api'
+import { ApiException } from '@/types/api'
 import { withProtectedApi, withPublicApi, withCustomRateLimit } from '@/lib/middleware'
 
 const tagService = new TagService()
