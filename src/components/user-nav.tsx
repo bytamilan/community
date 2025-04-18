@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { signOut } from "@/lib/actions"
+import { signOut } from "@/lib/auth-actions"
 import { CreditCard, LogOut, Settings, UserIcon } from "lucide-react"
 import type {User} from "@supabase/auth-js";
 

@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { signIn } from "@/lib/actions"
+import { signIn } from "@/lib/auth-actions"
 import { useTranslation } from "react-i18next"
 
 function SubmitButton() {
