@@ -10,6 +10,14 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model SeedVersion {
+  id        Int      @id @default(autoincrement())
+  version   String   @unique
+  appliedAt DateTime @default(now())
+
+  @@map("seed_version")
+}
+
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Category {
   id                Int      @id @default(autoincrement())

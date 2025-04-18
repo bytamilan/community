@@ -1,4 +1,4 @@
-# Contributing to BytaTamilan Community
+# Contributing to ByTamilan Community
 
 We love your input! We want to make contributing to BytaTamilan Community as easy and transparent as possible, whether it's:
 
