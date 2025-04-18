@@ -72,12 +72,12 @@ routes:
 
 errors:
   validation:
-    INVALID_REQUEST: 'Invalid request data'
-    UNIQUE_CONSTRAINT: 'This {field} already exists'
-    REQUIRED_FIELD: '{field} is required'
+    INVALID_REQUEST: 'erros.validation.INVALID_REQUEST'
+    UNIQUE_CONSTRAINT: 'erros.validation.UNIQUE_CONSTRAINT'
+    REQUIRED_FIELD: 'errors.validation.REQUIRED_FIELD'
   auth:
-    UNAUTHORIZED: 'You must be logged in to access this resource'
-    FORBIDDEN: 'You do not have permission to perform this action'
+    UNAUTHORIZED: 'errors.auth.UNAUTHORIZED'
+    FORBIDDEN: 'errors.auth.FORBIDDEN'
   server:
-    INTERNAL_ERROR: 'An internal server error occurred'
-    NOT_FOUND: 'Resource not found'
+    INTERNAL_ERROR: 'errors.server.INTERNAL_ERROR'
+    NOT_FOUND: 'errors.server.NOT_FOUND'

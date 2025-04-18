@@ -21,7 +21,7 @@ let apiConfig: any = null
 function loadApiConfig() {
   if (apiConfig) return apiConfig
   
-  const configPath = path.join(process.cwd(), 'public/locales/en/api.yml')
+  const configPath = path.join(process.cwd(), 'public/config/api.yml')
   const fileContents = fs.readFileSync(configPath, 'utf8')
   apiConfig = yaml.load(fileContents)
   return apiConfig

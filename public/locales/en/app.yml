@@ -127,6 +127,16 @@ credits:
   noTransactions: "No transactions yet"
 
 errors:
+  validation:
+    INVALID_REQUEST: 'Invalid request data'
+    UNIQUE_CONSTRAINT: 'This {field} already exists'
+    REQUIRED_FIELD: '{field} is required'
+  auth:
+    UNAUTHORIZED: 'You must be logged in to access this resource'
+    FORBIDDEN: 'You do not have permission to perform this action'
+  server:
+    INTERNAL_ERROR: 'An internal server error occurred'
+    NOT_FOUND: 'Not Found'
   api:
     POST:
       NOT_FOUND: "Post not found"
