@@ -49,7 +49,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-          <Link href="/public">
+          <Link href="/">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to discussions
           </Link>

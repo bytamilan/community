@@ -11,7 +11,7 @@ export default async function TagsPage() {
 
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <Link key={tag.id} href={`/public?tag=${tag.slug}`}>
+          <Link key={tag.id} href={`/?tag=${tag.slug}`}>
             <Badge variant="outline" className="text-base py-1.5 px-3 hover:bg-accent">
               {tag.name}
             </Badge>

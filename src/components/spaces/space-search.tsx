@@ -19,6 +19,7 @@ import {
   Search as SearchIcon,
 } from 'lucide-react';
 import debounce from 'lodash/debounce';
+import {fetchData} from "@/lib/api-utils";
 
 interface SearchResult {
   id: string;
@@ -54,8 +55,7 @@ export function SpaceSearch({ spaceId, onClose }: SpaceSearchProps) {
     setIsSearching(true);
     try {
       // This would be replaced with your actual API call
-      const response = await fetch(`/api/spaces/${spaceId}/search?q=${encodeURIComponent(searchQuery)}`);
-      const data = await response.json();
+      const data = await fetchData(`/api/spaces/${spaceId}/search?q=${encodeURIComponent(searchQuery)}`);
       setResults(data);
     } catch (error) {
       console.error('Error searching space:', error);

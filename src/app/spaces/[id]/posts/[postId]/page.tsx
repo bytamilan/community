@@ -7,6 +7,7 @@ import { CommentList } from '@/components/comment-list';
 import { CommentForm } from '@/components/comment-form';
 import { formatDistanceToNow } from 'date-fns';
 import { notFound } from 'next/navigation';
+import {fetchData} from "@/lib/api-utils";
 
 interface PostPageProps {
   params: {
@@ -16,19 +17,10 @@ interface PostPageProps {
 }
 
 async function getPost(spaceId: string, postId: string) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/spaces/${spaceId}/posts/${postId}`,
-    { next: { revalidate: 60 } }
+  const response = await fetchData(
+    `/spaces/${spaceId}/posts/${postId}`,
   );
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      return notFound();
-    }
-    throw new Error('Failed to fetch post');
-  }
-
-  return response.json();
+  return response;
 }
 
 export default async function PostPage({ params }: PostPageProps) {

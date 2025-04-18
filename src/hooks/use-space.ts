@@ -1,8 +1,8 @@
 'use client'
 import { useState, useCallback } from 'react';
 import { useWorkspace } from '@/contexts/workspace-context';
-import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
+import {deleteData, fetchData, patchData, postData} from "@/lib/api-utils";
 
 interface SpaceMember {
   id: string;
@@ -19,7 +19,6 @@ interface UseSpaceOptions {
 
 export function useSpace({ spaceId }: UseSpaceOptions) {
   const { spaces, updateSpace, canAccess } = useWorkspace();
-  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [members, setMembers] = useState<SpaceMember[]>([]);
 
@@ -31,8 +30,7 @@ export function useSpace({ spaceId }: UseSpaceOptions) {
     setIsLoading(true);
     try {
       // This would be replaced with your actual API call
-      const response = await fetch(`/api/spaces/${spaceId}/members`);
-      const data = await response.json();
+      const data = await fetchData<SpaceMember[]>(`/api/spaces/${spaceId}/members`);
       setMembers(data);
     } catch (error) {
       console.error('Error fetching members:', error);
@@ -49,10 +47,7 @@ export function useSpace({ spaceId }: UseSpaceOptions) {
 
     try {
       // This would be replaced with your actual API call
-      await fetch(`/api/spaces/${spaceId}/members/${memberId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ role }),
-      });
+      await patchData(`/api/spaces/${spaceId}/members/${memberId}`,{ role });
 
       setMembers(prev =>
         prev.map(member =>
@@ -73,10 +68,7 @@ export function useSpace({ spaceId }: UseSpaceOptions) {
     }
 
     try {
-      // This would be replaced with your actual API call
-      await fetch(`/api/spaces/${spaceId}/members/${memberId}`, {
-        method: 'DELETE',
-      });
+      await deleteData(`/api/spaces/${spaceId}/members/${memberId}`);
 
       setMembers(prev => prev.filter(member => member.id !== memberId));
     } catch (error) {
@@ -92,10 +84,7 @@ export function useSpace({ spaceId }: UseSpaceOptions) {
 
     try {
       // This would be replaced with your actual API call
-      await fetch(`/api/spaces/${spaceId}/invites`, {
-        method: 'POST',
-        body: JSON.stringify({ email, role }),
-      });
+      await postData(`/api/spaces/${spaceId}/invites`, { email, role });
 
       toast.success(`Invitation sent to ${email}`);
     } catch (error) {

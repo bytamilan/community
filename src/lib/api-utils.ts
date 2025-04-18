@@ -153,48 +153,34 @@ const getErrorMessage = (error: AxiosError): string => {
   }
   return 'An unexpected error occurred';
 };
+export async function fetchData<T>(endpoint: string): Promise<T> {
+  const { data } = await apiClient.get<T>(endpoint)
+  return data
+}
 
-// API hooks for common operations
-export const useApiRequest = <T,>(endpoint: string) => {
-  const fetchData = async (): Promise<T> => {
-    try {
-      const response = await apiClient.get<T>(endpoint);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+export async function postData<T, U = any>(
+    endpoint: string,
+    payload: U
+): Promise<T> {
+  const { data } = await apiClient.post<T>(endpoint, payload)
+  return data
+}
 
-  const postData = async (data: any): Promise<T> => {
-    try {
-      const response = await apiClient.post<T>(endpoint, data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+export async function updateData<T, U = any>(
+    endpoint: string,
+    payload: U
+): Promise<T> {
+  const { data } = await apiClient.put<T>(endpoint, payload)
+  return data
+}
+export async function patchData<T, U = any>(
+    endpoint: string,
+    payload: U
+): Promise<T> {
+  const { data } = await apiClient.patch<T>(endpoint, payload)
+  return data
+}
 
-  const updateData = async (data: any): Promise<T> => {
-    try {
-      const response = await apiClient.put<T>(endpoint, data);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const deleteData = async (): Promise<void> => {
-    try {
-      await apiClient.delete(endpoint);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  return {
-    fetchData,
-    postData,
-    updateData,
-    deleteData,
-  };
-};
+export async function deleteData(endpoint: string): Promise<void> {
+  await apiClient.delete(endpoint)
+}

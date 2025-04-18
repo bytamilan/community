@@ -41,7 +41,7 @@ export function Navbar({ searchParams }: { searchParams?: { lang?: string } }) {
     <header className="border-b">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/public" className="text-xl font-bold">
+          <Link href="/" className="text-xl font-bold">
             Community
           </Link>
           <nav className="hidden md:flex items-center gap-6">

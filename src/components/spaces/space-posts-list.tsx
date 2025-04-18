@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import {deleteData, fetchData} from "@/lib/api-utils";
 
 interface Post {
   id: string;
@@ -54,9 +55,7 @@ export function SpacePostsList({ spaceId }: SpacePostsListProps) {
 
   const fetchPosts = React.useCallback(async () => {
     try {
-      const response = await fetch(`/api/spaces/${spaceId}/posts`);
-      if (!response.ok) throw new Error('Failed to fetch posts');
-      const data = await response.json();
+      const data = await fetchData<Post[]>(`/api/spaces/${spaceId}/posts`);
       setPosts(data);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -77,12 +76,7 @@ export function SpacePostsList({ spaceId }: SpacePostsListProps) {
     }
 
     try {
-      const response = await fetch(`/api/spaces/${spaceId}/posts/${postId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete post');
-
+      await deleteData(`/api/spaces/${spaceId}/posts/${postId}`);
       toast.success('Post deleted successfully');
       fetchPosts();
     } catch (error) {
