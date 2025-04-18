@@ -5,29 +5,28 @@ routes:
       list:
         method: GET
         auth: public
-        schema: postQuerySchema
         rateLimit:
-          windowSize: 60000
-          maxRequests: 50
+          windowSize: 60000  # 1 minute
+          maxRequests: 100
       create:
         method: POST
         auth: protected
-        schema: createPostSchema
+        schema: PostSchema
       getById:
         path: /:id
         method: GET
         auth: public
-        schema: none
       update:
         path: /:id
-        method: PATCH
+        method: PUT
         auth: protected
-        schema: updatePostSchema
+        schema: PostSchema
+        roles: ['author', 'admin']
       delete:
         path: /:id
         method: DELETE
         auth: protected
-        schema: none
+        roles: ['author', 'admin']
 
   comments:
     base: /api/comments
@@ -35,49 +34,37 @@ routes:
       list:
         method: GET
         auth: public
-        schema: commentQuerySchema
+        rateLimit:
+          windowSize: 60000
+          maxRequests: 50
       create:
         method: POST
         auth: protected
-        schema: createCommentSchema
-      getById:
-        path: /:id
-        method: GET
-        auth: public
-      update:
-        path: /:id
-        method: PATCH
-        auth: protected
-        schema: updateCommentSchema
+        schema: CommentSchema
       delete:
         path: /:id
         method: DELETE
         auth: protected
+        roles: ['author', 'admin']
 
-  categories:
-    base: /api/categories
+  users:
+    base: /api/users
     endpoints:
-      list:
+      profile:
         method: GET
-        auth: public
-        schema: categoryQuerySchema
-        rateLimit:
-          windowSize: 60000
-          maxRequests: 100
-      create:
-        method: POST
         auth: protected
-        schema: createCategorySchema
-        roles: [admin]
+      update:
+        method: PUT
+        auth: protected
+        schema: UserSchema
 
 errors:
   validation:
-    INVALID_REQUEST: 'erros.validation.INVALID_REQUEST'
-    UNIQUE_CONSTRAINT: 'erros.validation.UNIQUE_CONSTRAINT'
-    REQUIRED_FIELD: 'errors.validation.REQUIRED_FIELD'
+    INVALID_REQUEST: 'Invalid request format'
+    INVALID_SCHEMA: 'Data validation failed'
   auth:
-    UNAUTHORIZED: 'errors.auth.UNAUTHORIZED'
-    FORBIDDEN: 'errors.auth.FORBIDDEN'
+    UNAUTHORIZED: 'Authentication required'
+    FORBIDDEN: 'Insufficient permissions'
   server:
-    INTERNAL_ERROR: 'errors.server.INTERNAL_ERROR'
-    NOT_FOUND: 'errors.server.NOT_FOUND'
+    NOT_FOUND: 'Resource not found'
+    INTERNAL_ERROR: 'Internal server error'

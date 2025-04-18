@@ -31,12 +31,25 @@ export type ApiResponse<T> = {
 
 export class ApiException extends Error {
   constructor(
-    public code: string,
+    public readonly code: string,
     message: string,
-    public status: number = 400,
-    public details?: unknown
+    public readonly status: number = 500,
+    public readonly details?: unknown
   ) {
     super(message)
     this.name = 'ApiException'
+  }
+
+  toResponse(): Response {
+    return Response.json(
+      {
+        error: {
+          code: this.code,
+          message: this.message,
+          details: this.details
+        }
+      },
+      { status: this.status }
+    )
   }
 }

@@ -1,0 +1,32 @@
+routes:
+  posts:
+    base: /api/posts
+    endpoints:
+      list:
+        method: GET
+        auth: public
+      create:
+        method: POST
+        auth: protected
+      getById:
+        path: /:id
+        method: GET
+        auth: public
+
+  comments:
+    base: /api/comments
+    endpoints:
+      list:
+        method: GET
+        auth: public
+        rateLimit:
+          windowSize: 60000
+          maxRequests: 50
+
+errors:
+  validation:
+    INVALID_REQUEST: 'Invalid request'
+  auth:
+    UNAUTHORIZED: 'Unauthorized'
+  server:
+    NOT_FOUND: 'Not found'
