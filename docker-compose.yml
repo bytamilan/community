@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - supabase
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+  supabase:
+    image: supabase/supabase-local:latest
+    ports:
+      - "54322:5432"  # PostgreSQL
+      - "54323:54323" # Supabase Studio
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token}
+      DASHBOARD_USERNAME: admin
+      DASHBOARD_PASSWORD: admin
+    volumes:
+      - supabase-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  supabase-data:
+  redis-data:
